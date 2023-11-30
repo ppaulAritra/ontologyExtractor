@@ -8,4 +8,6 @@ package msc.thesis.aritra.main;
 public enum DatabaseTable {
     CLASSES_TABLE,
     INDIVIDUALS_TABLE,
+    PROPERTIES_TABLE,
+    PROPERTY_TOP_TABLE,
 }

@@ -42,8 +42,6 @@ public class SPARQLFactory {
 		return sb.toString();
 	}
 
-	
-
 
 	// count individuals of this class
 	public String classExtensionSizeQuery( String sClass ){
@@ -78,7 +76,29 @@ public class SPARQLFactory {
 		log.info("Query to get (atomic) classes for this individual "+sb.toString());
 		return sb.toString();
 	}
-
-
+	// get individual pairs in this property
+	public String propertyExtensionQuery( String sProp ){
+		StringBuilder sb = new StringBuilder();
+		sb.append( PREFIX +" " );
+		sb.append( "SELECT distinct ?x ?y WHERE {" );
+		sb.append( " ?x <"+ sProp +"> ?y ." );
+		// sb.append( " ?y a ?yt ." );
+		sb.append( " }" );
+		return sb.toString();
+	}
+	// get properties
+	public String propertiesQuery(){
+		StringBuilder sb = new StringBuilder();
+		sb.append( PREFIX +" " );
+		sb.append( "SELECT distinct ?x" );
+		sb.append( " WHERE {" );
+		sb.append( " ?y ?x ?z ." );
+		sb.append( " ?z a ?zt ." );
+		/* if( m_sFilter != null ){
+		 sb.append( " FILTER regex( ?x, '^"+ m_sFilter +"' ) ." );
+		 } */
+		sb.append( " }" );
+		return sb.toString();
+	}
 
 }

@@ -11,6 +11,12 @@ public enum AxiomType {
      */
     CLASS_SUBSUMPTION_SIMPLE("class-subsumption-simple", "Class subsumption between two atomic classes"),
     /**
+     * Class subsumption between a class intersection and an atomic class (A \sqcap B \sqsubseteq C)
+     * A cap B subset C
+     */
+    CLASS_SUBSUMPTION_COMPLEX("class-subsumption-complex", "Class subsumption between a class intersection and an " +
+            "atomic class (A \\sqcap B \\sqsubseteq C)", true),
+    /**
      * Property domain restriction \exists p.T \sqsubseteq D
      */
     PROPERTY_DOMAIN("property-domain", "Property domain restriction \\exists p.T \\sqsubseteq D");

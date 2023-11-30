@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class SPARQLHTTPQueryEngine extends SPARQLQueryEngine {
 	protected String m_sGraph;
 
 	protected int m_iChunk;
-
+	String[] number = {"0","1", "2", "3", "4", "5", "6", "7", "8", "9"};
 	public SPARQLHTTPQueryEngine(){
 		m_sEndpoint = Settings.getString(Parameter.ENDPOINT);
         m_sGraph = Settings.getString( Parameter.GRAPH );
@@ -72,7 +73,9 @@ public class SPARQLHTTPQueryEngine extends SPARQLQueryEngine {
                 String sURI = checkURISyntax(r.getURI());
                 if (sURI != null) {
                     if (filter == null || sURI.startsWith(filter)) {
+						if(!Arrays.stream(number).anyMatch(sURI::contains)){
                         set.add(sURI);
+						}
                     }
                 }
             }
@@ -108,7 +111,9 @@ public class SPARQLHTTPQueryEngine extends SPARQLQueryEngine {
 				{
 					String s[] = { sURI1, sURI2 };
 					if( filter == null || ( s[0].startsWith( filter ) && s[1].startsWith( filter ) ) ){
-						set.add(s);
+						if(!Arrays.stream(number).anyMatch(sURI1::contains) && !Arrays.stream(number).anyMatch(sURI2::contains)) {
+							set.add(s);
+						}
 					}
 				}
 			}

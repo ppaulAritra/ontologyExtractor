@@ -13,6 +13,11 @@ public class RequirementsResolver {
         //TODO: move into file?
         addDatabaseDependency(AxiomType.CLASS_SUBSUMPTION_SIMPLE, DatabaseTable.CLASSES_TABLE,
                 DatabaseTable.INDIVIDUALS_TABLE);
+        addDatabaseDependency(AxiomType.CLASS_SUBSUMPTION_COMPLEX, DatabaseTable.CLASSES_TABLE,
+                DatabaseTable.INDIVIDUALS_TABLE);
+        addDatabaseDependency(AxiomType.PROPERTY_DOMAIN, DatabaseTable.INDIVIDUALS_TABLE,
+                DatabaseTable.PROPERTIES_TABLE,
+                DatabaseTable.PROPERTY_TOP_TABLE);
 
     }
     public static final HashMap<AxiomType, Set<TransactionTable>> TRANSACTION_TABLE_DEPENDENCIES = new HashMap
@@ -20,6 +25,7 @@ public class RequirementsResolver {
 
     static {
         addTransactionDependency(AxiomType.CLASS_SUBSUMPTION_SIMPLE, TransactionTable.CLASS_MEMBERS);
+        addTransactionDependency(AxiomType.CLASS_SUBSUMPTION_COMPLEX, TransactionTable.CLASS_MEMBERS);
         addTransactionDependency(AxiomType.PROPERTY_DOMAIN, TransactionTable.PROPERTY_RESTRICTIONS1);
     }
 

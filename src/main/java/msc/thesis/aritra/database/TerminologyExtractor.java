@@ -51,5 +51,49 @@ public class TerminologyExtractor extends Extractor {
         sqlDatabase.setAutoCommit(true);
 		log.info( "done: "+ id );
 	}
+	public void initPropertiesTable() {
+		String sQuery1 = sparqlFactory.propertiesQuery();
+		log.info( "Sparql properties table query "+sQuery1 );
+		ResultsIterator iter = sparqlEngine.query( sQuery1, this.filter.getClassesFilter() );
+		sqlDatabase.setAutoCommit(false);
+		while( iter.hasNext() )
+		{
 
+			String sProp = iter.next();
+			String sName = getLocalName( sProp );
+			System.out.println( "Sparql property result "+sProp );
+			String sQuery2 = sqlFactory.insertPropertyQuery( this.id++, sProp, sName );
+			this.id = this.id + 2;
+			sqlDatabase.execute( sQuery2 );
+			if (this.id % 1001 == 0 || this.id % 1000 == 500) {
+				sqlDatabase.commit();
+			}
+		}
+		sqlDatabase.setAutoCommit(true);
+		System.out.println( "done: "+ this.id );
+	}
+	public void initPropertyTopTable() throws SQLException {
+		String sQuery = sqlFactory.selectPropertiesQuery();
+		System.out.println( "***Sparql property top table query*** "+sQuery );
+		ResultSet results = sqlDatabase.query( sQuery );
+		sqlDatabase.setAutoCommit(false);
+		while( results.next() )
+		{
+			String sPropURI = results.getString( "uri" );
+			String sPropName = results.getString( "name" );
+			int iPropID = results.getInt( "id" );
+			int iTopID = iPropID + 1000;
+			int iInvTopID = iPropID + 2000;
+			String sInsert1 = sqlFactory.insertPropertyTopQuery( this.id++, 0, sPropURI, sPropName );
+			String sInsert2 = sqlFactory.insertPropertyTopQuery( this.id++, 1, sPropURI, sPropName );
+			sqlDatabase.execute( sInsert1 );
+			sqlDatabase.execute( sInsert2 );
+			if (iPropID % 1001 == 0) {
+				sqlDatabase.commit();
+			}
+		}
+		sqlDatabase.commit();
+		sqlDatabase.setAutoCommit(true);
+		System.out.println( "Setup.initPropertyTopTable: done" );
+	}
 }

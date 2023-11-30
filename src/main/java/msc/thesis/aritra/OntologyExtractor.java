@@ -88,36 +88,6 @@ public class OntologyExtractor {
         });
     }
 
-    public boolean terminologyAcquisition() throws Exception {
-        if (requirementsResolver.isDatabaseTableRequired(DatabaseTable.CLASSES_TABLE)) {
-            chk.performCheckpointedOperation("initclassestable", new CheckpointUtil.CheckpointedOperation() {
-                @Override
-                public boolean run() throws Exception {
-                    terminologyExtractor.initClassesTable();
-                    return true;
-                }
-            });
-        }
-
-        if (requirementsResolver.isDatabaseTableRequired(DatabaseTable.INDIVIDUALS_TABLE)) {
-            chk.performCheckpointedOperation("initindividualstable", new CheckpointUtil.CheckpointedOperation() {
-                @Override
-                public boolean run() {
-                    try {
-                        individualsExtractor.initIndividualsTable();
-                    }
-                    catch (SQLException e) {
-                        return false;
-                    }
-                    return true;
-                }
-            });
-        }
-
-        return true;
-    }
-
-
     /**
      * Returns the set of all axiom types activated in the configuration.
      *
@@ -129,7 +99,9 @@ public class OntologyExtractor {
             activeTypes.add(AxiomType.CLASS_SUBSUMPTION_SIMPLE);
         }
 
-
+        if (Settings.isAxiomActivated("c_and_c_sub_c")) {
+            activeTypes.add(AxiomType.CLASS_SUBSUMPTION_COMPLEX);
+        }
         if (Settings.isAxiomActivated("exists_p_T_sub_c")) {
             activeTypes.add(AxiomType.PROPERTY_DOMAIN);
         }
@@ -162,7 +134,27 @@ public class OntologyExtractor {
                 }
             });
         }
-
+        if (requirementsResolver.isTransactionTableRequired(TransactionTable.PROPERTY_RESTRICTIONS1)) {
+            chk.performCheckpointedOperation("propertyrestrictions1", new CheckpointUtil.CheckpointedOperation() {
+                @Override
+                public boolean run() {
+                    deleteFile(TransactionTable.PROPERTY_RESTRICTIONS1);
+                    try {
+                        tablePrinter.printPropertyRestrictions(TransactionTable.PROPERTY_RESTRICTIONS1.getAbsoluteFileName(),
+                                0);
+                    }
+                    catch (SQLException e) {
+                        log.error("Error creating property restrictions 1 transaction table", e);
+                        return false;
+                    }
+                    catch (IOException e) {
+                        log.error("Error creating property restrictions 1 transaction table", e);
+                        return false;
+                    }
+                    return true;
+                }
+            });
+        }
     }
 
     /**
@@ -180,5 +172,56 @@ public class OntologyExtractor {
         }
     }
 
+    public boolean terminologyAcquisition() throws Exception {
+        if (requirementsResolver.isDatabaseTableRequired(DatabaseTable.CLASSES_TABLE)) {
+            chk.performCheckpointedOperation("initclassestable", new CheckpointUtil.CheckpointedOperation() {
+                @Override
+                public boolean run() throws Exception {
+                    terminologyExtractor.initClassesTable();
+                    return true;
+                }
+            });
+        }
 
+        if (requirementsResolver.isDatabaseTableRequired(DatabaseTable.INDIVIDUALS_TABLE)) {
+            chk.performCheckpointedOperation("initindividualstable", new CheckpointUtil.CheckpointedOperation() {
+                @Override
+                public boolean run() {
+                    try {
+                        individualsExtractor.initIndividualsTable();
+                    }
+                    catch (SQLException e) {
+                        return false;
+                    }
+                    return true;
+                }
+            });
+        }
+        if (requirementsResolver.isDatabaseTableRequired(DatabaseTable.PROPERTIES_TABLE)) {
+            chk.performCheckpointedOperation("initpropertiestable",
+                    new CheckpointUtil.CheckpointedOperation() {
+                        @Override
+                        public boolean run() {
+                            terminologyExtractor.initPropertiesTable();
+                            return true;
+                        }
+                    });
+        }
+
+        if (requirementsResolver.isDatabaseTableRequired(DatabaseTable.PROPERTY_TOP_TABLE)) {
+            chk.performCheckpointedOperation("initpropertytoptable", new CheckpointUtil.CheckpointedOperation() {
+                @Override
+                public boolean run() {
+                    try {
+                        terminologyExtractor.initPropertyTopTable();
+                    }
+                    catch (SQLException e) {
+                        return false;
+                    }
+                    return true;
+                }
+            });
+        }
+        return true;
+    }
 }
