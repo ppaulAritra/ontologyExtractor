@@ -19,8 +19,15 @@ public enum AxiomType {
     /**
      * Property domain restriction \exists p.T \sqsubseteq D
      */
-    PROPERTY_DOMAIN("property-domain", "Property domain restriction \\exists p.T \\sqsubseteq D");
-
+    PROPERTY_DOMAIN("property-domain", "Property domain restriction \\exists p.T \\sqsubseteq D"),
+    /**
+     * Property range restriction represented as \exists p^-1.T \sqsubseteq C
+     */
+    PROPERTY_RANGE("property-range", "Property range restriction represented as \\exists p^-1.T \\sqsubseteq C"),
+    /**
+     * Required property for class C \sqsubseteq \exists p.D
+     */
+    PROPERTY_REQUIRED_FOR_CLASS("property-required-for-class", "Required property for class C \\sqsubseteq \\exists p.D");
     private boolean hasSecondAntecedent;
     private String name;
     private String description;

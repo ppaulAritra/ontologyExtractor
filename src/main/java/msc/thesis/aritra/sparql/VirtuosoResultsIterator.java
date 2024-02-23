@@ -1,6 +1,7 @@
 package msc.thesis.aritra.sparql;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -39,5 +40,8 @@ public class VirtuosoResultsIterator implements ResultsIterator {
     public boolean isFailed() {
         return false;
     }
+
+
+
 }
 

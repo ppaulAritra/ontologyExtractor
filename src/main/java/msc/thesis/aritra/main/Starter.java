@@ -22,6 +22,9 @@ public class Starter {
         Subparser generateParser = subparsers.addParser("generate").help("Generate transaction tables");
         generateParser.setDefault("func", new GenerateAssociationRules());
 
+        Subparser mineParser = subparsers.addParser("mine").help("Run the association rule mining step");
+        mineParser.setDefault("func", new MineAssociationRules());
+
         Subparser configStubParser = subparsers.addParser("genconfig")
                 .help("Writes stubs for the configuration files to the files specified" +
                         " by the --axiomcfg and --minercfg parameters or (if not " +

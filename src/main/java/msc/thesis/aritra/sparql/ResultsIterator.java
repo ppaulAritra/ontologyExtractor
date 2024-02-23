@@ -1,6 +1,8 @@
 package msc.thesis.aritra.sparql;
 
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.stream.StreamSupport;
 
 public interface ResultsIterator extends Iterator<String> {
     @Override
@@ -13,4 +15,6 @@ public interface ResultsIterator extends Iterator<String> {
     void remove();
 
     public boolean isFailed();
+
+
 }

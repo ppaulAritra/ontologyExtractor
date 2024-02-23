@@ -29,6 +29,8 @@ public class Setup {
         result = this.sqlDatabase.execute(propertiesQuery) && result;
         String classesExPropertyTopQuery = this.m_sqlFactory.createClassesExPropertyTopTable();
         result = this.sqlDatabase.execute(classesExPropertyTopQuery) && result;
+        String classesExPropertyQuery = this.m_sqlFactory.createClassesExPropertyTable();
+        result = this.sqlDatabase.execute(classesExPropertyQuery) && result;
         return result;
     }
 

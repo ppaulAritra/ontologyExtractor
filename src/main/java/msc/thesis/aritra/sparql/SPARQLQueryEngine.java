@@ -5,6 +5,8 @@ import msc.thesis.aritra.util.Parameter;
 import msc.thesis.aritra.util.Settings;
 import org.slf4j.Logger;
 
+import java.util.HashSet;
+
 public abstract class SPARQLQueryEngine {
     public static final Logger logger = org.slf4j.LoggerFactory.getLogger(SPARQLQueryEngine.class);
 
@@ -37,6 +39,9 @@ public abstract class SPARQLQueryEngine {
     public abstract ResultsIterator query(String query, String filter);
 
     public abstract ResultPairsIterator queryPairs(String query, String filter);
+    public abstract ResultPairsIterator queryPairs(String query, HashSet<String> filter);
 
     public abstract int count(String queryString) throws Exception;
+
+    public abstract SPARQLResult query(String sQuery);
 }

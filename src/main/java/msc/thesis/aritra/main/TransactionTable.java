@@ -9,8 +9,9 @@ import java.io.File;
  */
 public enum TransactionTable {
     CLASS_MEMBERS("classmembers"),
-    PROPERTY_RESTRICTIONS1("propertyrestrictions1");
-
+    PROPERTY_RESTRICTIONS1("propertyrestrictions1"),
+    PROPERTY_RESTRICTIONS2("propertyrestrictions2"),
+    EXISTS_PROPERTY_MEMBERS("existspropertymembers");
 
 
     private String tableName;
@@ -40,5 +41,23 @@ public enum TransactionTable {
         return Settings.getString("transaction_tables")  + getFileName();
     }
 
+    /**
+     * Returns the absolute path of the association rule file generated from this table.
+     * @return the absolute path of the association rule file generated from this table
+     */
+    public String getAbsoluteAssociationRuleFileName() {
+        return Settings.getString("association_rules") + File.separator + getAssociationRuleFileName();
+    }
 
+    /**
+     * Returns the name of the association rule file generated from this table.
+     * @return the name of the association rule file generated from this table
+     */
+    public String getAssociationRuleFileName() {
+        return tableName + "AR.txt";
+    }
+
+    public String getAbsoluteFileName(String key) {
+        return Settings.getString(key)  + getFileName();
+    }
 }

@@ -66,6 +66,7 @@ public class SQLDatabase {
         try {
             assureConnected();
             stmt = connection.createStatement();
+           // connection.prepareStatement(query);
             stmt.setFetchSize(5000);
             results = stmt.executeQuery( query );
             return results;

@@ -10,10 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 
 public class SPARQLHTTPQueryEngine extends SPARQLQueryEngine {
@@ -52,6 +49,11 @@ public class SPARQLHTTPQueryEngine extends SPARQLQueryEngine {
 
 	@Override
     public ResultPairsIterator queryPairs(String query, String filter) {
+		return new SPARQLResultPairsIterator( this, query, filter );
+	}
+
+	@Override
+	public ResultPairsIterator queryPairs(String query, HashSet<String> filter) {
 		return new SPARQLResultPairsIterator( this, query, filter );
 	}
 
@@ -127,6 +129,66 @@ public class SPARQLHTTPQueryEngine extends SPARQLQueryEngine {
 		return set;
 	}
 
+	protected List<String[]> execute( String queryString, String sVar1, String sVar2, HashSet<String> filter ) throws Exception {
+		// System.out.println( "QueryEngine.query: "+ queryString +"\n" );
+		List<String[]> set = new ArrayList<String[]>();
+		Query query = QueryFactory.create( queryString );
+		QueryExecution qe = null;
+		try {
+			if( m_sGraph == null ){
+				qe = QueryExecutionFactory.sparqlService( m_sEndpoint, query );
+			}
+			else {
+				qe = QueryExecutionFactory.sparqlService( m_sEndpoint, query, m_sGraph );
+			}
+			ResultSet results = qe.execSelect();
+			while( results.hasNext() )
+			{
+				QuerySolution soln = results.nextSolution();
+				Resource r1 = soln.getResource( sVar1 );
+				Resource r2 = soln.getResource( sVar2 );
+				String sURI1 = checkURISyntax( r1.getURI() );
+				String sURI2 = checkURISyntax( r2.getURI() );
+				if( sURI1 != null && sURI2 != null )
+				{
+					//System.out.println(sURI1 +" "+filter.contains(sURI1));
+					//System.out.println(sURI2 +" "+filter.contains(sURI2));
+					String s[] = { sURI1, sURI2 };
+					if( filter == null || (filter.contains(sURI1) && filter.contains(sURI2))){
+						if(!Arrays.stream(number).anyMatch(sURI1::contains) && !Arrays.stream(number).anyMatch(sURI2::contains)) {
+							set.add(s);
+						}
+					}
+				}
+			}
+		}
+		catch( Exception e ){
+			e.printStackTrace();
+		}
+		finally {
+			if( qe != null ) qe.close();
+		}
+		return set;
+	}
+public boolean executeAsk (String sQuery){
+	Query query = QueryFactory.create( sQuery );
+	QueryExecution qe = null;
+	try {
+		if (m_sGraph == null) {
+			qe = QueryExecutionFactory.sparqlService(m_sEndpoint, query);
+		} else {
+			qe = QueryExecutionFactory.sparqlService(m_sEndpoint, query, m_sGraph);
+		}
+	}
+	catch( Exception e ){
+		e.printStackTrace();
+	}
+	finally {
+		if( qe != null ) qe.close();
+	}
+	boolean exists = qe.execAsk();
+	return exists;
+}
 	@Override
     public int count(String queryString) throws Exception {
 		// System.out.println( "QueryEngine.count: "+ queryString +"\n" );
@@ -154,6 +216,11 @@ public class SPARQLHTTPQueryEngine extends SPARQLQueryEngine {
 			if( qe != null ) qe.close();
 		}
 		return 0;
+	}
+
+	@Override
+	public SPARQLResult query(String sQuery) {
+		return new SPARQLResult(this,sQuery);
 	}
 
 	protected String checkURISyntax( String sURI ){

@@ -11,7 +11,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class TerminologyExtractor extends Extractor {
 	public static Logger log = LoggerFactory.getLogger(TerminologyExtractor.class);
@@ -29,8 +31,6 @@ public class TerminologyExtractor extends Extractor {
 		log.info( "Sparql class table query "+query );
 		log.info( "**********************  " );
 		ResultsIterator iter = sparqlEngine.query( query, this.filter.getClassesFilter() );
-		log.info( "Sparql class table iterator failed?  "+iter.isFailed() );
-		log.info( "Sparql class table iterator has next?  "+iter.hasNext() );
 		int id = 0;
         sqlDatabase.setAutoCommit(false);
 		while( iter.hasNext() && !iter.isFailed() )
@@ -41,7 +41,6 @@ public class TerminologyExtractor extends Extractor {
 			String sName = getLocalName( sClass );
 			String sCountClassIndQuery = sparqlFactory.classExtensionSizeQuery( sClass );
 			int iSize = sparqlEngine.count( sCountClassIndQuery );
-			log.info( sClass +" ... " );
 			String sQuery = sqlFactory.insertClassQuery( this.id++, sClass, sName, iSize );
 			sqlDatabase.execute( sQuery );
             if (id % 1000 == 0) {
@@ -49,7 +48,7 @@ public class TerminologyExtractor extends Extractor {
             }
         }
         sqlDatabase.setAutoCommit(true);
-		log.info( "done: "+ id );
+
 	}
 	public void initPropertiesTable() {
 		String sQuery1 = sparqlFactory.propertiesQuery();
@@ -95,5 +94,43 @@ public class TerminologyExtractor extends Extractor {
 		sqlDatabase.commit();
 		sqlDatabase.setAutoCommit(true);
 		System.out.println( "Setup.initPropertyTopTable: done" );
+	}
+
+	public void initClassesExistsPropertyTable() throws SQLException  {
+		String properties[] = getProperties();
+		// read classes from database
+		String sQuery1 = sqlFactory.selectClassesQuery();
+		ResultSet results1 = sqlDatabase.query( sQuery1 );
+		int id = 1000;
+		sqlDatabase.setAutoCommit(false);
+		while( results1.next() )
+		{
+			String sClass = results1.getString( "uri" );
+			for( String sProp: properties )
+			{
+
+				System.out.println( "Setup.initClassesExistsProperty( "+ sProp +", "+ sClass +" ) -> "+ id );
+				// update table
+				String sClassName = getLocalName( sClass );
+				String sPropName = getLocalName( sProp );
+				String sQuery3 = sqlFactory.insertClassExistsPropertyQuery( this.id++, sProp, sClass, sPropName, sClassName );
+				sqlDatabase.execute( sQuery3 );
+				id++;
+				if (id % 1000 == 0) {
+					sqlDatabase.commit();
+				}
+			}
+		}
+		sqlDatabase.setAutoCommit(true);
+		System.out.println( "Done: "+ id );
+	}
+	public String[] getProperties() throws SQLException {
+		HashSet<String> properties = new HashSet<String>();
+		String sQuery = sqlFactory.selectPropertiesQuery();
+		ResultSet results = sqlDatabase.query( sQuery );
+		while( results.next() ){
+			properties.add( results.getString( "uri" ) );
+		}
+		return properties.toArray( new String[properties.size()] );
 	}
 }

@@ -18,6 +18,11 @@ public class RequirementsResolver {
         addDatabaseDependency(AxiomType.PROPERTY_DOMAIN, DatabaseTable.INDIVIDUALS_TABLE,
                 DatabaseTable.PROPERTIES_TABLE,
                 DatabaseTable.PROPERTY_TOP_TABLE);
+        addDatabaseDependency(AxiomType.PROPERTY_RANGE, DatabaseTable.INDIVIDUALS_TABLE,
+                DatabaseTable.PROPERTIES_TABLE,
+                DatabaseTable.PROPERTY_TOP_TABLE);
+        addDatabaseDependency(AxiomType.PROPERTY_REQUIRED_FOR_CLASS, DatabaseTable.INDIVIDUALS_TABLE,
+                DatabaseTable.PROPERTIES_TABLE, DatabaseTable.CLASSES_EXISTS_PROPERTY_TABLE);
 
     }
     public static final HashMap<AxiomType, Set<TransactionTable>> TRANSACTION_TABLE_DEPENDENCIES = new HashMap
@@ -27,6 +32,8 @@ public class RequirementsResolver {
         addTransactionDependency(AxiomType.CLASS_SUBSUMPTION_SIMPLE, TransactionTable.CLASS_MEMBERS);
         addTransactionDependency(AxiomType.CLASS_SUBSUMPTION_COMPLEX, TransactionTable.CLASS_MEMBERS);
         addTransactionDependency(AxiomType.PROPERTY_DOMAIN, TransactionTable.PROPERTY_RESTRICTIONS1);
+        addTransactionDependency(AxiomType.PROPERTY_RANGE, TransactionTable.PROPERTY_RESTRICTIONS2);
+        addTransactionDependency(AxiomType.PROPERTY_REQUIRED_FOR_CLASS, TransactionTable.EXISTS_PROPERTY_MEMBERS);
     }
 
     private Set<AxiomType> activeAxiomTypes;
@@ -111,5 +118,14 @@ public class RequirementsResolver {
     public boolean isTransactionTableRequired(TransactionTable table) {
         return requiredTransactionTables.contains(table);
     }
-
+    public Set<TransactionTable> getRequiredTransactionTables() {
+        return Collections.unmodifiableSet(requiredTransactionTables);
+    }
+    public TransactionTable getRequiredTransactionTable(AxiomType axiomType) {
+        Set<TransactionTable> requiredTransactionTables = TRANSACTION_TABLE_DEPENDENCIES.get(axiomType);
+        if (requiredTransactionTables.size() != 1) {
+            throw new RuntimeException("Found multiple main transaction tables for axiom type " + axiomType);
+        }
+        return requiredTransactionTables.iterator().next();
+    }
 }
