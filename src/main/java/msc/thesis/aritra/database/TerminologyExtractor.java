@@ -76,6 +76,7 @@ public class TerminologyExtractor extends Extractor {
 		System.out.println( "***Sparql property top table query*** "+sQuery );
 		ResultSet results = sqlDatabase.query( sQuery );
 		sqlDatabase.setAutoCommit(false);
+		String sId="";
 		while( results.next() )
 		{
 			String sPropURI = results.getString( "uri" );
@@ -83,8 +84,10 @@ public class TerminologyExtractor extends Extractor {
 			int iPropID = results.getInt( "id" );
 			int iTopID = iPropID + 1000;
 			int iInvTopID = iPropID + 2000;
-			String sInsert1 = sqlFactory.insertPropertyTopQuery( this.id++, 0, sPropURI, sPropName );
-			String sInsert2 = sqlFactory.insertPropertyTopQuery( this.id++, 1, sPropURI, sPropName );
+			sId = "T"+this.id++;
+			String sInsert1 = sqlFactory.insertPropertyTopQuery( sId, 0, sPropURI, sPropName );
+			sId = "B"+this.id++;
+			String sInsert2 = sqlFactory.insertPropertyTopQuery( sId, 1, sPropURI, sPropName );
 			sqlDatabase.execute( sInsert1 );
 			sqlDatabase.execute( sInsert2 );
 			if (iPropID % 1001 == 0) {

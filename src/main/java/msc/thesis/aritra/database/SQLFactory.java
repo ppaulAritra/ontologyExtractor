@@ -30,7 +30,7 @@ public class SQLFactory {
     }
     public String createClassesExPropertyTopTable() {
         return "CREATE TABLE classes_ex_property_top (" +
-                "id bigint(20) PRIMARY KEY, " +
+                "id varchar(20) PRIMARY KEY, " +
                 "inverse varchar(255) NOT NULL, " +
                 "uri varchar(1200) NOT NULL, " +
                 "name varchar(1000) NOT NULL" +
@@ -52,8 +52,8 @@ public class SQLFactory {
     public String insertIndividualQuery(int iID, String sURI, String sName) {
         return "INSERT INTO individuals VALUES (" + iID + ", '" + sURI + "', '" + sName + "')";
     }
-    public String insertPropertyTopQuery(int iID, int iInv, String sPropURI, String sPropName) {
-        return "INSERT INTO classes_ex_property_top VALUES (" + iID + ", " + iInv + ", '" + sPropURI + "', " +
+    public String insertPropertyTopQuery(String sID, int iInv, String sPropURI, String sPropName) {
+        return "INSERT INTO classes_ex_property_top VALUES ('" + sID + "', " + iInv + ", '" + sPropURI + "', " +
                 "'" + sPropName + "')";
     }
     public String insertPropertyQuery(int iID, String sURI, String sName) {
@@ -94,7 +94,9 @@ public class SQLFactory {
     public String selectExistsPropertyIDQuery(String sPropURI, String sClassURI) {
         return "SELECT * FROM classes_ex_property WHERE prop_uri='" + sPropURI + "' AND class_uri='" + sClassURI + "'";
     }
-
+    public String selectExistsPropertyIDQuery() {
+        return "SELECT * FROM classes_ex_property WHERE prop_uri = ? AND class_uri = ?";
+    }
     public String selectExistsPropertyById(String iExistPropId) {
         return "SELECT * FROM classes_ex_property_top WHERE id in ("+iExistPropId+ ")";
     }

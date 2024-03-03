@@ -78,9 +78,27 @@ public class SQLDatabase {
         }
         return null;
     }
-
+    public ResultSet query( String query, String sPropURI, String sClassURI ){
+        PreparedStatement preparedStatement = null;
+        ResultSet results = null;
+        try {
+            assureConnected();
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, sPropURI);
+            preparedStatement.setString(2, sClassURI);
+            preparedStatement.setFetchSize(5000);
+            results = preparedStatement.executeQuery();
+            return results;
+        }
+        catch( SQLException ex ){
+            System.out.println( "SQLException: " + ex.getMessage() );
+            System.out.println( "SQLState: " + ex.getSQLState() );
+            System.out.println( "VendorError: " + ex.getErrorCode() );
+        }
+        return null;
+    }
     public boolean execute( String update ){
-        // System.out.println( "Database.execute: "+ update );
+         System.out.println( "Database.execute: "+ update );
         Statement stmt = null;
         ResultSet results = null;
         try {

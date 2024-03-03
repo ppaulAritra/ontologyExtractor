@@ -115,7 +115,7 @@ public class TablePrinter {
         ResultSet results = sqlDatabase.query(sQuery);
 
         ArrayList<String> chunk = new ArrayList<String>();
-        HashMap<String, Integer> hmPropTops = getExistsPropertyTops(iInverse);
+        HashMap<String, String> hmPropTops = getExistsPropertyTops(iInverse);
         int iDone = 0;
         while (results.next()) {
             //for each individual
@@ -127,8 +127,8 @@ public class TablePrinter {
                 if ((iInverse == 0 && hmDomains[i].get(sIndURI) != null)
                         || (iInverse == 1 && hmRanges[i].get(sIndURI) != null)) {
                     String sPropURI = properties[i];
-                    int iPropID = hmPropTops.get(sPropURI);
-                    sbLine.append(iPropID).append("\t");
+                    String sPropID = hmPropTops.get(sPropURI);
+                    sbLine.append(sPropID).append("\t");
                     bComplex = true;
                 }
             }
@@ -149,7 +149,7 @@ public class TablePrinter {
            // }
             iDone++;
             if (sbLine.length() > 0) {
-//                System.out.println("TablePrinter.print: " + sIndURI + " (" + iIndID + ") -> " + sbLine.toString());
+                System.out.println("TablePrinter.print: " + sIndURI + " (" + iIndID + ") -> " + sbLine.toString());
                 writer.write(sbLine.toString());
                 writer.newLine();
             }
@@ -190,21 +190,21 @@ public class TablePrinter {
         cachedProperties = properties.toArray(new String[properties.size()]);
         return cachedProperties;
     }
-    public HashMap<String, Integer> getExistsPropertyTops(int iInverse) throws SQLException {
-        HashMap<String, Integer> hmPropTops = new HashMap<String, Integer>();
+    public HashMap<String, String> getExistsPropertyTops(int iInverse) throws SQLException {
+        HashMap<String, String> hmPropTops = new HashMap<String, String>();
         String sQuery = sqlFactory.selectPropertyRestrictionsQuery(iInverse);
         ResultSet results = sqlDatabase.query(sQuery);
         while (results.next()) {
             String sPropURI = results.getString("uri");
-            int iPropID = results.getInt("id");
-            hmPropTops.put(sPropURI, iPropID);
+            String sPropID = results.getString("id");
+            hmPropTops.put(sPropURI, sPropID);
         }
         results.getStatement().close();
         return hmPropTops;
     }
     public void printExistsPropertyMembers(String sOutFile, int iStart, HashSet<Integer> frequentRoles, HashSet<Integer> frequentClasses) throws SQLException, IOException {
         System.out.println("sOutFile: "+sOutFile);
-        int iChunk = 200000; //341298
+        int iChunk = 1300000; //341298
         boolean bDone = false;
         while (!bDone) {
             System.out.println("TablePrinter: start=" + iStart + " chunk=" + iChunk);
@@ -290,7 +290,9 @@ public class TablePrinter {
         if (sClassID == null || sPropID == null) {
             return null;
         }
-        ResultSet results = sqlDatabase.query(sqlFactory.selectExistsPropertyIDQuery(sPropURI, sClassURI));
+// start 19:39 pM
+
+        ResultSet results = sqlDatabase.query(sqlFactory.selectExistsPropertyIDQuery(),sPropURI,sClassURI);
         if (results.next()) {
             String res = results.getString("id");
             results.getStatement().close();

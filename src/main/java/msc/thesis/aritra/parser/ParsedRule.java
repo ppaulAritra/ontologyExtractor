@@ -4,18 +4,18 @@ package msc.thesis.aritra.parser;
  * Container for axiom data gained by parsing association rule files
  */
 public class ParsedRule {
-    private int antecedent1;
-    private int antecedent2;
-    private int cons;
+    private String antecedent1;
+    private String antecedent2;
+    private String cons;
     private SupportConfidenceTuple tuple;
 
-    public ParsedRule(int ante1, int cons, double supp, double conf) {
+    public ParsedRule(String ante1, String cons, double supp, double conf) {
         this.antecedent1 = ante1;
         this.cons = cons;
         this.tuple = new SupportConfidenceTuple(supp, conf);
     }
 
-    public ParsedRule(int ante1, int ante2, int cons, double supp, double conf) {
+    public ParsedRule(String ante1, String ante2, String cons, double supp, double conf) {
         this.antecedent1 = ante1;
         this.antecedent2 = ante2;
         this.cons = cons;
@@ -25,21 +25,21 @@ public class ParsedRule {
     /**
      * @return the ante1
      */
-    public int getAntecedent1() {
+    public String getAntecedent1() {
         return antecedent1;
     }
 
     /**
      * @return the ante2
      */
-    public int getAntecedent2() {
+    public String getAntecedent2() {
         return antecedent2;
     }
 
     /**
      * @return the cons
      */
-    public int getCons() {
+    public String getCons() {
         return cons;
     }
 
@@ -101,9 +101,8 @@ public class ParsedRule {
 
     @Override
     public int hashCode() {
-        int result = antecedent1;
-        result = 31 * result + antecedent2;
-        result = 31 * result + cons;
+        int result = 1;
+
         return result;
     }
 }

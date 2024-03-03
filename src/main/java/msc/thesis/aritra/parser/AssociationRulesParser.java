@@ -24,9 +24,9 @@ public class AssociationRulesParser {
         BufferedReader in = new BufferedReader(new FileReader(rules));
         String patternRegex;
         if (secondAnte) {
-            patternRegex = "^(\\d+)\\s+<-\\s+(\\d+)\\s+(\\d+)\\s+\\((\\d+(?:\\.\\d+)?(?:e[+-]\\d+)?),\\s+(\\d+(?:\\.\\d+)?(?:e[+-]\\d+)?)\\)$";
+            patternRegex = "^(\\w+)\\s+<-\\s+(\\w+)\\s+(\\w+)\\s+\\((\\d+(?:\\.\\d+)?(?:e[+-]\\d+)?),\\s+(\\d+(?:\\.\\d+)?(?:e[+-]\\d+)?)\\)$";
         } else {
-            patternRegex = "^(\\d+)\\s+<-\\s+(\\d+)\\s+\\((\\d+(?:\\.\\d+)?(?:e[+-]\\d+)?),\\s+(\\d+(?:\\.\\d+)?(?:e[+-]\\d+)?)\\)$";
+            patternRegex = "^(\\w+)\\s+<-\\s+(\\w+)\\s+\\((\\d+(?:\\.\\d+)?(?:e[+-]\\d+)?),\\s+(\\d+(?:\\.\\d+)?(?:e[+-]\\d+)?)\\)$";
         }
        //"^(\\d+)\\s+\\((\\d+(?:\\.\\d+)?(?:e[+-]\\d+)?)\\)$"
         String line;
@@ -45,19 +45,20 @@ public class AssociationRulesParser {
                     continue;
                 }
             }
-            int cons = Integer.parseInt(matcher.group(1));
-            int ante = Integer.parseInt(matcher.group(2));
+            String cons = matcher.group(1);
+            String ante = matcher.group(2);
 
             int counter = 3;
-            int ante2 = -1;
+            String ante2 = String.valueOf(-1);
             if (secondAnte) {
-                ante2 = Integer.parseInt(matcher.group(counter++));
+                ante2 = String.valueOf(matcher.group(counter++));
             }
             double supp = Double.parseDouble(matcher.group(counter++));
             double conf = Double.parseDouble(matcher.group(counter));
             if (secondAnte) {
                 axioms.add(new ParsedRule(ante, ante2, cons, supp, conf));
             } else {
+                //System.out.println(ante+" "+cons+" "+supp+" "+conf);
                 axioms.add(new ParsedRule(ante, cons, supp, conf));
             }
         }

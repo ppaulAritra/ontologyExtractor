@@ -78,8 +78,7 @@ public class OntologyExtractor {
         try {
             this.sqlDatabase.close();
             return true;
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             return false;
         }
     }
@@ -124,12 +123,10 @@ public class OntologyExtractor {
                 deleteFile(TransactionTable.CLASS_MEMBERS);
                 try {
                     tablePrinter.printClassMembers(TransactionTable.CLASS_MEMBERS.getAbsoluteFileName());
-                }
-                catch (SQLException e) {
+                } catch (SQLException e) {
                     log.error("Error creating class members transaction table", e);
                     return false;
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     log.error("Error creating class members transaction table", e);
                     return false;
                 }
@@ -143,12 +140,10 @@ public class OntologyExtractor {
                     tablePrinter.printPropertyRestrictions(TransactionTable.PROPERTY_RESTRICTIONS1.getAbsoluteFileName(),
                             0);
                     generateFrequentRoles();
-                }
-                catch (SQLException e) {
+                } catch (SQLException e) {
                     log.error("Error creating property restrictions 1 transaction table", e);
                     return false;
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     log.error("Error creating property restrictions 1 transaction table", e);
                     return false;
                 }
@@ -161,12 +156,10 @@ public class OntologyExtractor {
                 try {
                     tablePrinter.printPropertyRestrictions(TransactionTable.PROPERTY_RESTRICTIONS2.getAbsoluteFileName(),
                             1);
-                }
-                catch (SQLException e) {
+                } catch (SQLException e) {
                     log.error("Error creating property restrictions 2 transaction table", e);
                     return false;
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     log.error("Error creating property restrictions 2 transaction table", e);
                     return false;
                 }
@@ -181,18 +174,16 @@ public class OntologyExtractor {
 
                     try {
 
-                        File f = new File(Settings.getString("frequent_props")+ "propertyrestrictions1.txt");
+                        File f = new File(Settings.getString("frequent_props") + "propertyrestrictions1.txt");
                         HashSet<Integer> parsedFrequentElements = propParser.parse(f);
-                        List<HashSet<Integer>> frequentElements= getFrequentRoleAndClasses(parsedFrequentElements);
+                        List<HashSet<Integer>> frequentElements = getFrequentRoleAndClasses(parsedFrequentElements);
                         tablePrinter.printExistsPropertyMembers(
                                 TransactionTable.EXISTS_PROPERTY_MEMBERS.getAbsoluteFileName(),
-                                1041292, frequentElements.get(0),frequentElements.get(1));
-                    }
-                    catch (SQLException e) {
+                                0, frequentElements.get(0), frequentElements.get(1));
+                    } catch (SQLException e) {
                         log.error("Error creating exists property members transaction table", e);
                         return false;
-                    }
-                    catch (IOException e) {
+                    } catch (IOException e) {
                         log.error("Error creating exists property members transaction table", e);
                         return false;
                     }
@@ -204,6 +195,7 @@ public class OntologyExtractor {
 
     /**
      * Deletes the transaction table file for the given table. Errors and exceptions are silently ignored!
+     *
      * @param table table whose file representation should be deleted
      */
     private void deleteFile(TransactionTable table) {
@@ -211,8 +203,7 @@ public class OntologyExtractor {
         f.delete();
         try {
             f.createNewFile();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             log.warn("Unable to create transaction table file '{}'", f.getAbsolutePath());
         }
     }
@@ -232,8 +223,7 @@ public class OntologyExtractor {
             chk.performCheckpointedOperation("initindividualstable", () -> {
                 try {
                     individualsExtractor.initIndividualsTable();
-                }
-                catch (SQLException e) {
+                } catch (SQLException e) {
                     return false;
                 }
                 return true;
@@ -251,8 +241,7 @@ public class OntologyExtractor {
             chk.performCheckpointedOperation("initpropertytoptable", () -> {
                 try {
                     terminologyExtractor.initPropertyTopTable();
-                }
-                catch (SQLException e) {
+                } catch (SQLException e) {
                     return false;
                 }
                 return true;
@@ -265,8 +254,7 @@ public class OntologyExtractor {
                         public boolean run() {
                             try {
                                 terminologyExtractor.initClassesExistsPropertyTable();
-                            }
-                            catch (SQLException e) {
+                            } catch (SQLException e) {
                                 return false;
                             }
                             return true;
@@ -275,6 +263,7 @@ public class OntologyExtractor {
         }
         return true;
     }
+
     /**
      * Starts the external mining process on all relevant transaction table files.
      *
@@ -312,9 +301,10 @@ public class OntologyExtractor {
             input.close();
         }
     }
-    public void generateFrequentRoles() throws IOException{
-        String inputFile = Settings.getString("transaction_tables")+ "propertyrestrictions1.txt";
-        String outPutFile = Settings.getString("frequent_props")+ "propertyrestrictions1.txt";
+
+    public void generateFrequentRoles() throws IOException {
+        String inputFile = Settings.getString("transaction_tables") + "propertyrestrictions1.txt";
+        String outPutFile = Settings.getString("frequent_props") + "propertyrestrictions1.txt";
         ProcessBuilder p = new ProcessBuilder(Settings.getString("apriori"),
                 "-ts", "-s-100", "-m1", "-n1", "-v (%5s)",
                 inputFile, //transaction table file
@@ -378,6 +368,7 @@ public class OntologyExtractor {
             }
         }
     }
+
     private void deleteAssociationRuleNameFiles() {
         File ruleFileDirectory = new File(Settings.getString("association_rules_name"));
 
@@ -399,11 +390,11 @@ public class OntologyExtractor {
     public void parseAssociationRules()
             throws IOException, SQLException {
         CacheTable cacheTable = new CacheTable(this.sqlDatabase);
-        HashMap<Integer, String> cachedClassName = cacheTable.getClassNames();
-        HashMap<Integer, String> cachedUriName = cacheTable.getClassUrl();
-        HashMap<Integer, String> cachedPropertyName = cacheTable.getPropertyNames();
-        HashMap<Integer, String> cachedClassNameForExPropClass = cacheTable.getClassAndPropertyNameForExPropClass().get(1);
-        HashMap<Integer, String> cachedPropNameForExPropClass = cacheTable.getClassAndPropertyNameForExPropClass().get(0);
+        HashMap<String, String> cachedClassName = cacheTable.getClassNames();
+        HashMap<String, String> cachedUriName = cacheTable.getClassUrl();
+        HashMap<String, String> cachedPropertyName = cacheTable.getPropertyNames();
+        HashMap<String, String> cachedClassNameForExPropClass = cacheTable.getClassAndPropertyNameForExPropClass().get(1);
+        HashMap<String, String> cachedPropNameForExPropClass = cacheTable.getClassAndPropertyNameForExPropClass().get(0);
 
         /* Concept Subsumption: c and c sub c */
         log.debug("Subsumption");
@@ -411,11 +402,9 @@ public class OntologyExtractor {
         System.out.println(f.getAbsolutePath());
         if (!f.exists()) {
             log.warn("Unable to read: '{}'! Skipping...", f.getAbsolutePath());
-        }
-        else if (!activeAxiomTypes.contains(AxiomType.CLASS_SUBSUMPTION_COMPLEX)) {
+        } else if (!activeAxiomTypes.contains(AxiomType.CLASS_SUBSUMPTION_COMPLEX)) {
             log.info("Skipped complex class subsumption because not activated");
-        }
-        else {
+        } else {
             List<ParsedRule> axioms = this.parser.parse(f, false);
             Collections.sort(axioms, (o1, o2) -> (o2.getConf().compareTo(o1.getConf())));
             BufferedWriter writer = new BufferedWriter(new FileWriter(TransactionTable.CLASS_MEMBERS.getAbsoluteFileName("association_rules_name")));
@@ -425,39 +414,41 @@ public class OntologyExtractor {
               /*  sbLine.append(cachedClassName.get(pa.getCons())+" <- "+ cachedClassName.get(pa.getAntecedent1())+", "
                         +cachedClassName.get(pa.getAntecedent2())+ "( "+ pa.getSuppConfTuple().getSupport()+" "+pa.getSuppConfTuple().getConfidence()+ ")");*/
                 // for 1 antecedent
-                String containsInData = tablePrinter.checkIfSubclass(cachedUriName.get(pa.getCons()),cachedUriName.get(pa.getAntecedent1()));
-                sbLine.append(cachedClassName.get(pa.getCons())+" <- "+ cachedClassName.get(pa.getAntecedent1())
-                        + "( "+ pa.getSuppConfTuple().getSupport()+" "+pa.getSuppConfTuple().getConfidence()+ ") " + containsInData);
+
+                String containsInData = tablePrinter.checkIfSubclass(cachedUriName.get(pa.getCons()), cachedUriName.get(pa.getAntecedent1()));
+                sbLine.append(cachedClassName.get(pa.getCons()) + " <- " + cachedClassName.get(pa.getAntecedent1())
+                        + "( " + pa.getSuppConfTuple().getSupport() + " " + pa.getSuppConfTuple().getConfidence() + ") " + containsInData);
                 if (sbLine.length() > 0) {
 //
                     writer.write(sbLine.toString());
                     writer.newLine();
                 }
-                }
+            }
             writer.flush();
             writer.close();
-            }
+        }
 
         log.debug("Number of Axioms: {}");
 
         /* Object Property Domain: exists p.T sub c */
         log.debug("Object Property Domain: exists_p_T_sub_c");
-         f = new File(requirementsResolver.getRequiredTransactionTable(AxiomType.PROPERTY_DOMAIN)
+        f = new File(requirementsResolver.getRequiredTransactionTable(AxiomType.PROPERTY_DOMAIN)
                 .getAbsoluteAssociationRuleFileName());
         if (!f.exists()) {
             log.warn("Unable to read: '{}'! Skipping...", f.getAbsolutePath());
-        }
-        else if (!activeAxiomTypes.contains(AxiomType.PROPERTY_DOMAIN)) {
+        } else if (!activeAxiomTypes.contains(AxiomType.PROPERTY_DOMAIN)) {
             log.info("Skipped property domain because not activated");
-        }
-        else {
+        } else {
             List<ParsedRule> axioms = this.parser.parse(f, false);
             Collections.sort(axioms, (o1, o2) -> (o2.getConf().compareTo(o1.getConf())));
             BufferedWriter writer = new BufferedWriter(new FileWriter(TransactionTable.PROPERTY_RESTRICTIONS1.getAbsoluteFileName("association_rules_name")));
             for (ParsedRule pa : axioms) {
+                /*System.out.println(pa.getCons() + " " + cachedClassName.get(pa.getCons()) + " " + cachedPropertyName.get(pa.getCons())
+                +" " +pa.getAntecedent1() + " " + cachedClassName.get(pa.getAntecedent1()) + " " + cachedPropertyName.get(pa.getAntecedent1()));*/
+
                 StringBuilder sbLine = new StringBuilder();
-                String name1 = pa.getCons() < 9000 ? cachedClassName.get(pa.getCons()) : cachedPropertyName.get(pa.getCons());
-                String name2 = pa.getAntecedent1() < 9000 ? cachedClassName.get(pa.getAntecedent1()) : cachedPropertyName.get(pa.getAntecedent1());
+                String name1 = (pa.getCons().startsWith("T") || pa.getCons().startsWith("B")) ? cachedPropertyName.get(pa.getCons()) : cachedClassName.get(pa.getCons());
+                String name2 = (pa.getAntecedent1().startsWith("T") || pa.getAntecedent1().startsWith("B")) ? cachedPropertyName.get(pa.getAntecedent1()) : cachedClassName.get(pa.getAntecedent1());
 
                 // for 2 ante
               /*  String name3 = pa.getAntecedent2() < 9000 ? cachedClassName.get(pa.getAntecedent2()) : cachedPropertyName.get(pa.getAntecedent2());
@@ -466,8 +457,8 @@ public class OntologyExtractor {
                         + "( "+ pa.getSuppConfTuple().getSupport()+" "+pa.getSuppConfTuple().getConfidence()+ ")");*/
 
                 // for 1 ante
-                sbLine.append(name1+" <- "+ name2
-                        + "( "+ pa.getSuppConfTuple().getSupport()+" "+pa.getSuppConfTuple().getConfidence()+ ")");
+                sbLine.append(name1 + " <- " + name2
+                        + "( " + pa.getSuppConfTuple().getSupport() + " " + pa.getSuppConfTuple().getConfidence() + ")");
                 if (sbLine.length() > 0) {
 //
                     writer.write(sbLine.toString());
@@ -481,22 +472,21 @@ public class OntologyExtractor {
 
         /* Object Property Range: exists p^i.T sub c */
         log.debug("Object Property Range: exists_pi_T_sub_c");
-         f = new File(requirementsResolver.getRequiredTransactionTable(AxiomType.PROPERTY_RANGE)
+        f = new File(requirementsResolver.getRequiredTransactionTable(AxiomType.PROPERTY_RANGE)
                 .getAbsoluteAssociationRuleFileName());
         if (!f.exists()) {
             log.warn("Unable to read: '{}'! Skipping...", f.getAbsolutePath());
-        }
-        else if (!activeAxiomTypes.contains(AxiomType.PROPERTY_RANGE)) {
+        } else if (!activeAxiomTypes.contains(AxiomType.PROPERTY_RANGE)) {
             log.info("Skipped property required for class because not activated");
-        }
-        else {
+        } else {
             List<ParsedRule> axioms = this.parser.parse(f, false);
             Collections.sort(axioms, (o1, o2) -> (o2.getConf().compareTo(o1.getConf())));
             BufferedWriter writer = new BufferedWriter(new FileWriter(TransactionTable.PROPERTY_RESTRICTIONS2.getAbsoluteFileName("association_rules_name")));
             for (ParsedRule pa : axioms) {
                 StringBuilder sbLine = new StringBuilder();
-                String name1 = pa.getCons() < 9000 ? cachedClassName.get(pa.getCons()) : cachedPropertyName.get(pa.getCons());
-                String name2 = pa.getAntecedent1() < 9000 ? cachedClassName.get(pa.getAntecedent1()) : cachedPropertyName.get(pa.getAntecedent1());
+                String name1 = (pa.getCons().startsWith("T") || pa.getCons().startsWith("B")) ? cachedPropertyName.get(pa.getCons()) : cachedClassName.get(pa.getCons());
+                String name2 = (pa.getAntecedent1().startsWith("T") || pa.getAntecedent1().startsWith("B")) ? cachedPropertyName.get(pa.getAntecedent1()) : cachedClassName.get(pa.getAntecedent1());
+
 
                 //for 2 ante
 //                String name3 = pa.getAntecedent2() < 9000 ? cachedClassName.get(pa.getAntecedent2()) : cachedPropertyName.get(pa.getAntecedent2());
@@ -505,8 +495,8 @@ public class OntologyExtractor {
 //                        + "( "+ pa.getSuppConfTuple().getSupport()+" "+pa.getSuppConfTuple().getConfidence()+ ")");
 
                 // for 1 ante
-                sbLine.append(name1+" <- "+ name2
-                        + "( "+ pa.getSuppConfTuple().getSupport()+" "+pa.getSuppConfTuple().getConfidence()+ ")");
+                sbLine.append(name1 + " <- " + name2
+                        + "( " + pa.getSuppConfTuple().getSupport() + " " + pa.getSuppConfTuple().getConfidence() + ")");
                 if (sbLine.length() > 0) {
 //
                     writer.write(sbLine.toString());
@@ -523,11 +513,9 @@ public class OntologyExtractor {
                 .getAbsoluteAssociationRuleFileName());
         if (!f.exists()) {
             log.warn("Unable to read: '{}'! Skipping...", f.getAbsolutePath());
-        }
-        else if (!activeAxiomTypes.contains(AxiomType.PROPERTY_REQUIRED_FOR_CLASS)) {
+        } else if (!activeAxiomTypes.contains(AxiomType.PROPERTY_REQUIRED_FOR_CLASS)) {
             log.info("Skipped property domain because not activated");
-        }
-        else {
+        } else {
             List<ParsedRule> axioms = this.parser.parse(f, false);
             Collections.sort(axioms, (o1, o2) -> (o2.getConf().compareTo(o1.getConf())));
             BufferedWriter writer = new BufferedWriter(new FileWriter(TransactionTable.EXISTS_PROPERTY_MEMBERS.getAbsoluteFileName("association_rules_name")));
@@ -536,13 +524,13 @@ public class OntologyExtractor {
 
                 // for 1 antecedent
                 sbLine.append(
-                        cachedPropNameForExPropClass.get(pa.getCons())+"."
-                        + cachedClassNameForExPropClass.get(pa.getCons())
-                        + " <- "
-                        +cachedPropNameForExPropClass.get(pa.getAntecedent1())+"."
-                        + cachedClassNameForExPropClass.get(pa.getAntecedent1())
-                        + "( "+ pa.getSuppConfTuple().getSupport()
-                        +" "+pa.getSuppConfTuple().getConfidence()+ ")"
+                        cachedPropNameForExPropClass.get(pa.getCons()) + "."
+                                + cachedClassNameForExPropClass.get(pa.getCons())
+                                + " <- "
+                                + cachedPropNameForExPropClass.get(pa.getAntecedent1()) + "."
+                                + cachedClassNameForExPropClass.get(pa.getAntecedent1())
+                                + "( " + pa.getSuppConfTuple().getSupport()
+                                + " " + pa.getSuppConfTuple().getConfidence() + ")"
                 );
                 if (sbLine.length() > 0) {
 //
@@ -555,20 +543,21 @@ public class OntologyExtractor {
         }
 
     }
-    public List<HashSet<Integer>> getFrequentRoleAndClasses(HashSet<Integer> parsedFrequentElements ){
+
+    public List<HashSet<Integer>> getFrequentRoleAndClasses(HashSet<Integer> parsedFrequentElements) {
         List<HashSet<Integer>> result = new ArrayList<HashSet<Integer>>();
         HashSet<Integer> frequentProps = new HashSet<>();
         HashSet<Integer> frequentClass = new HashSet<>();
         Iterator<Integer> it = parsedFrequentElements.iterator();
-        while (it.hasNext()){
+        while (it.hasNext()) {
             Integer i = it.next();
-            if(i < 9000)
+            if (i < 9000)
                 frequentClass.add(i);
             else
                 frequentProps.add(i);
         }
-        System.out.println("*********"+ frequentProps.size());
-        System.out.println("*********"+ frequentClass.size());
+        System.out.println("*********" + frequentProps.size());
+        System.out.println("*********" + frequentClass.size());
         result.add(frequentProps);
         result.add(frequentClass);
         return result;
