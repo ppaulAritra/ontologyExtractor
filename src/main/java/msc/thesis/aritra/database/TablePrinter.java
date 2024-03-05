@@ -202,7 +202,7 @@ public class TablePrinter {
         results.getStatement().close();
         return hmPropTops;
     }
-    public void printExistsPropertyMembers(String sOutFile, int iStart, HashSet<Integer> frequentRoles, HashSet<Integer> frequentClasses) throws SQLException, IOException {
+    public void printExistsPropertyMembers(String sOutFile, int iStart, HashSet<String> frequentRoles, HashSet<String> frequentClasses) throws SQLException, IOException {
         System.out.println("sOutFile: "+sOutFile);
         int iChunk = 1300000; //341298
         boolean bDone = false;
@@ -215,7 +215,7 @@ public class TablePrinter {
         }
         System.out.println("TablePrinter: done!");
     }
-    public boolean printExistsPropertyMembers(int iStart, int iEnd, String sOutFile, HashSet<Integer> frequentRoles, HashSet<Integer> frequentClasses) throws SQLException, IOException {
+    public boolean printExistsPropertyMembers(int iStart, int iEnd, String sOutFile, HashSet<String> frequentRoles, HashSet<String> frequentClasses) throws SQLException, IOException {
         System.out.println("TablePrinter.write: " + sOutFile);
         // read individuals from database
         BufferedWriter writer = new BufferedWriter(new FileWriter(sOutFile));
@@ -316,11 +316,18 @@ public class TablePrinter {
         return m_hmProp2ID.get(sURI);
     }
 
-    public String getFrequentElemInString(HashSet<Integer> frequentProp){
+    public String getFrequentElemInString(HashSet<String> frequentProp){
         StringBuilder result = new StringBuilder();
         Iterator iter = frequentProp.iterator();
         while (iter.hasNext()){
-            result.append(iter.next());
+            String val = String.valueOf(iter.next());
+            if(val.startsWith("T") || val.startsWith("B")) {
+                result.append("'" + val + "'");
+            }
+            else
+            {
+                result.append(val);
+            }
             result.append(",");
         }
         result.deleteCharAt(result.length() - 1);

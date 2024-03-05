@@ -9,17 +9,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class FrequentPropParser {
-    public HashSet<Integer> parse(File rules) throws IOException {
+    public HashSet<String> parse(File rules) throws IOException {
         BufferedReader in = new BufferedReader(new FileReader(rules));
-        String patternRegex = "^(\\d+)\\s+\\((\\d+(?:\\.\\d+)?(?:e[+-]\\d+)?)\\)$";
+        String patternRegex = "^(\\w+)\\s+\\((\\d+(?:\\.\\d+)?(?:e[+-]\\d+)?)\\)$";
         String line;
         Pattern pattern = Pattern.compile(patternRegex);
-        HashSet<Integer> properties = new HashSet<>();
+        HashSet<String> properties = new HashSet<>();
         while ((line = in.readLine()) != null) {
             Matcher matcher = pattern.matcher(line.trim());
             boolean matches = matcher.matches();
 
-            int propId = Integer.parseInt(matcher.group(1));
+            String propId = matcher.group(1);
             Double support = Double.parseDouble(matcher.group(2));
             properties.add(propId);
         }

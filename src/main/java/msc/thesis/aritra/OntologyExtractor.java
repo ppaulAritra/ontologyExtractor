@@ -175,8 +175,8 @@ public class OntologyExtractor {
                     try {
 
                         File f = new File(Settings.getString("frequent_props") + "propertyrestrictions1.txt");
-                        HashSet<Integer> parsedFrequentElements = propParser.parse(f);
-                        List<HashSet<Integer>> frequentElements = getFrequentRoleAndClasses(parsedFrequentElements);
+                        HashSet<String> parsedFrequentElements = propParser.parse(f);
+                        List<HashSet<String>> frequentElements = getFrequentRoleAndClasses(parsedFrequentElements);
                         tablePrinter.printExistsPropertyMembers(
                                 TransactionTable.EXISTS_PROPERTY_MEMBERS.getAbsoluteFileName(),
                                 0, frequentElements.get(0), frequentElements.get(1));
@@ -544,17 +544,17 @@ public class OntologyExtractor {
 
     }
 
-    public List<HashSet<Integer>> getFrequentRoleAndClasses(HashSet<Integer> parsedFrequentElements) {
-        List<HashSet<Integer>> result = new ArrayList<HashSet<Integer>>();
-        HashSet<Integer> frequentProps = new HashSet<>();
-        HashSet<Integer> frequentClass = new HashSet<>();
-        Iterator<Integer> it = parsedFrequentElements.iterator();
+    public List<HashSet<String>> getFrequentRoleAndClasses(HashSet<String> parsedFrequentElements) {
+        List<HashSet<String>> result = new ArrayList<HashSet<String>>();
+        HashSet<String> frequentProps = new HashSet<>();
+        HashSet<String> frequentClass = new HashSet<>();
+        Iterator<String> it = parsedFrequentElements.iterator();
         while (it.hasNext()) {
-            Integer i = it.next();
-            if (i < 9000)
-                frequentClass.add(i);
+            String i = it.next();
+            if (i.startsWith("T")||i.startsWith("B"))
+            frequentProps.add(i);
             else
-                frequentProps.add(i);
+                frequentClass.add(i);
         }
         System.out.println("*********" + frequentProps.size());
         System.out.println("*********" + frequentClass.size());

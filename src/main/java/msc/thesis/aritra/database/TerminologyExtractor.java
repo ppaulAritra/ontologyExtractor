@@ -116,7 +116,7 @@ public class TerminologyExtractor extends Extractor {
 				// update table
 				String sClassName = getLocalName( sClass );
 				String sPropName = getLocalName( sProp );
-				String sQuery3 = sqlFactory.insertClassExistsPropertyQuery( this.id++, sProp, sClass, sPropName, sClassName );
+				String sQuery3 = sqlFactory.insertClassExistsPropertyQuery( "RC"+this.id++, sProp, sClass, sPropName, sClassName );
 				sqlDatabase.execute( sQuery3 );
 				id++;
 				if (id % 1000 == 0) {

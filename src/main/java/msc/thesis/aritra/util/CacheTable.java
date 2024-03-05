@@ -62,9 +62,9 @@ public class CacheTable {
         return propertyNameCache;
     }
     public List<HashMap<String, String>> getClassAndPropertyNameForExPropClass( ) throws SQLException {
-        List<HashMap<String, String>> result = new ArrayList<HashMap<String, String>>();
-         HashMap<String, String> classNameCacheForExPropClass = new HashMap<String, String>();;
-         HashMap<String, String> propertyNameCacheForExPropClass= new HashMap<String, String>();;
+        List<HashMap<String, String>> result = new ArrayList<>();
+         HashMap<String, String> classNameCacheForExPropClass = new HashMap<>();;
+         HashMap<String, String> propertyNameCacheForExPropClass= new HashMap<>();;
         Connection conn = sqlDatabase.getConnection();
         Statement stmt = conn.createStatement();
         ResultSet res = stmt.executeQuery(m_sqlFactory.selectPropertyClassName());

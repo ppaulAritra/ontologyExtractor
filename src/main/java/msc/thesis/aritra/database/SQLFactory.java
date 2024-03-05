@@ -39,11 +39,11 @@ public class SQLFactory {
 
     public String createClassesExPropertyTable() {
         return "CREATE TABLE classes_ex_property (" +
-                "id bigint(20) PRIMARY KEY, " +
-                "prop_uri varchar(1200) NOT NULL, " +
-                "class_uri varchar(1200) NOT NULL, " +
-                "prop_name varchar(1000) NOT NULL, " +
-                "class_name varchar(1000) NOT NULL" +
+                "id varchar(20) PRIMARY KEY, " +
+                "prop_uri varchar(280) NOT NULL, " +
+                "class_uri varchar(300) NOT NULL, " +
+                "prop_name varchar(100) NOT NULL, " +
+                "class_name varchar(100) NOT NULL" +
                 ");";
     }
     public String insertClassQuery(int iID, String sURI, String sName, int iSize) {
@@ -60,9 +60,9 @@ public class SQLFactory {
         return "INSERT INTO properties VALUES (" + iID + ", " + (iID + 1) + ", " + (iID + 2) + ", '" + sURI + "', " +
                 "'" + sName + "')";
     }
-    public String insertClassExistsPropertyQuery(int iID, String sPropURI, String sClassURI, String sPropName,
+    public String insertClassExistsPropertyQuery(String sID, String sPropURI, String sClassURI, String sPropName,
                                                  String sClassName) {
-        return "INSERT INTO classes_ex_property VALUES (" + iID + ", '" + sPropURI + "', '" + sClassURI + "', " +
+        return "INSERT INTO classes_ex_property VALUES ('" + sID + "', '" + sPropURI + "', '" + sClassURI + "', " +
                 "'" + sPropName + "', '" + sClassName + "')";
     }
     public String selectClassesQuery() {
@@ -97,12 +97,12 @@ public class SQLFactory {
     public String selectExistsPropertyIDQuery() {
         return "SELECT * FROM classes_ex_property WHERE prop_uri = ? AND class_uri = ?";
     }
-    public String selectExistsPropertyById(String iExistPropId) {
-        return "SELECT * FROM classes_ex_property_top WHERE id in ("+iExistPropId+ ")";
+    public String selectExistsPropertyById(String sExistPropId) {
+        return "SELECT * FROM classes_ex_property_top WHERE id in ("+sExistPropId+ ")";
     }
 
-    public String selectClassesById(String iExistClassId) {
-        return "SELECT * FROM classes WHERE id in ("+iExistClassId+ ")";
+    public String selectClassesById(String sExistClassId) {
+        return "SELECT * FROM classes WHERE id in ("+sExistClassId+ ")";
     }
     public String selectPropertyClassName () {
         return "SELECT id, prop_name, class_name FROM classes_ex_property";
