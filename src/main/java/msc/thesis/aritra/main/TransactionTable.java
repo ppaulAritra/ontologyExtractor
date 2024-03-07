@@ -11,7 +11,9 @@ public enum TransactionTable {
     CLASS_MEMBERS("classmembers"),
     PROPERTY_RESTRICTIONS1("propertyrestrictions1"),
     PROPERTY_RESTRICTIONS2("propertyrestrictions2"),
-    EXISTS_PROPERTY_MEMBERS("existspropertymembers");
+    EXISTS_PROPERTY_MEMBERS("existspropertymembers"),
+
+    ALL_MEMBER("allmembers");
 
 
     private String tableName;

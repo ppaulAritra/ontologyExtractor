@@ -36,6 +36,7 @@ public class OntologyExtractor {
     private RequirementsResolver requirementsResolver;
     private AssociationRulesParser parser;
     private FrequentPropParser propParser = new FrequentPropParser();
+    List<HashSet<String>> frequentElements;
 
     /**
      * Initialize ontology extractor to write the created ontology to the file specified in the configuration file.
@@ -176,7 +177,7 @@ public class OntologyExtractor {
 
                         File f = new File(Settings.getString("frequent_props") + "propertyrestrictions1.txt");
                         HashSet<String> parsedFrequentElements = propParser.parse(f);
-                        List<HashSet<String>> frequentElements = getFrequentRoleAndClasses(parsedFrequentElements);
+                        frequentElements = getFrequentRoleAndClasses(parsedFrequentElements);
                         tablePrinter.printExistsPropertyMembers(
                                 TransactionTable.EXISTS_PROPERTY_MEMBERS.getAbsoluteFileName(),
                                 0, frequentElements.get(0), frequentElements.get(1));
@@ -189,6 +190,34 @@ public class OntologyExtractor {
                     }
                     return true;
                 }
+            });
+        }
+        // transaction table for all previous EL concept
+        if(requirementsResolver.isTransactionTableRequired(TransactionTable.CLASS_MEMBERS) &&
+                requirementsResolver.isTransactionTableRequired(TransactionTable.PROPERTY_RESTRICTIONS1) &&
+                requirementsResolver.isTransactionTableRequired(TransactionTable.PROPERTY_RESTRICTIONS2) &&
+                requirementsResolver.isTransactionTableRequired(TransactionTable.EXISTS_PROPERTY_MEMBERS)){
+            chk.performCheckpointedOperation("allmembers", () -> {
+                deleteFile(TransactionTable.ALL_MEMBER);
+                try {
+                    if(frequentElements == null)
+                    {
+                        File f = new File(Settings.getString("frequent_props") + "propertyrestrictions1.txt");
+                        HashSet<String> parsedFrequentElements = propParser.parse(f);
+                        frequentElements = new ArrayList<>();
+                        frequentElements = getFrequentRoleAndClasses(parsedFrequentElements);
+                    }
+                    tablePrinter.printAllElConcept(TransactionTable.ALL_MEMBER.getAbsoluteFileName(),
+                            frequentElements.get(0), frequentElements.get(1));
+
+                } catch (SQLException e) {
+                    log.error("Error creating all el concept transaction table", e);
+                    return false;
+                } catch (IOException e) {
+                    log.error("Error creating all el concept transaction table", e);
+                    return false;
+                }
+                return true;
             });
         }
     }
